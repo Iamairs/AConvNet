@@ -6,25 +6,25 @@ AConvNet是一个基于卷积神经网络的目标分类模型，旨在实现论
 
 ## 安装指南
 
-1. 克隆项目仓库：
+#### 克隆项目仓库：
 
 ```bash
 git clone https://github.com/Iamairs/AConvNet.git
 ```
 
-2. 进入项目目录：
+#### 进入项目目录：
 
 ```bash
 cd AConvNet
 ```
 
-3. 安装依赖：
+#### 安装依赖：
 
 ```bash
 pip install -r requirements.txt
 ```
 
-4. 数据集准备：
+#### 数据集准备：
 
 1. 下载数据集[dataset.zip](https://github.com/jangsoopark/AConvNet-pytorch/releases/download/v2.2.0/dataset.zip)文件。
 2. 解压文件后，在raw目录下可以找到train和test目录。
@@ -32,7 +32,7 @@ pip install -r requirements.txt
 
 ## 使用说明
 
-### 处理数据
+ 处理数据
 
 ```bash
 cd src/datasets/raw_data
