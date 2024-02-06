@@ -32,7 +32,7 @@ pip install -r requirements.txt
 
 ## 使用说明
 
- 处理数据
+### 处理数据
 
 ```bash
 cd src/datasets/raw_data
@@ -40,7 +40,7 @@ python data_entry.py --mode=train
 python data_entry.py --mode=test
 ```
 
-### 训练模型
+#### 训练模型
 
 ```bash
 cd ../../
@@ -49,7 +49,7 @@ python train.py
 
 你可以通过 `--help` 选项查看更多可用参数的说明。
 
-### 测试模型
+#### 测试模型
 
 ```bash
 python test.py
