@@ -43,6 +43,7 @@ python data_entry.py --mode=test
 ### 训练模型
 
 ```bash
+cd ../../
 python train.py
 ```
 
