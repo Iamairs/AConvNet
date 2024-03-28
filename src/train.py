@@ -21,8 +21,8 @@ from src.datasets.processed_data import data_loader
 import model
 
 
-def run(data_path, dataset_name, batch_size, patch_size, train_ratio,
-        classes, channels, dropout_rate, activation,
+def run(data_path, dataset_name, train_ratio, batch_size, patch_size,
+        random_seed, classes, channels, dropout_rate, activation,
         lr, lr_step, lr_decay, momentum, weight_decay,
         epochs, output_dir, log_dir, device,
         resume, checkpoint_path):
@@ -113,6 +113,7 @@ def main():
         patch_size=args.patch_size,
         batch_size=args.batch_size,
         train_ratio=args.train_ratio,
+        random_seed=args.seed,
         classes=args.classes,
         channels=args.channels,
         dropout_rate=args.dropout_rate,
