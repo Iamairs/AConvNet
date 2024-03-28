@@ -107,9 +107,12 @@ def run(data_path, dataset_name, train_ratio, batch_size, patch_size,
         train_result['accuracy'] = accuracy
 
         # 保存并打印日志
+        # setup_logger(f'{step_k}th_{log_dir}/{dataset_name}_output.log')
         setup_logger(f'{log_dir}/{dataset_name}_output.log')
         logging.info(
-            f'Epoch: {epoch + 1:03d}/{epochs:03d} | loss={np.mean(_loss):.4f} | lr={lr} | accuracy={accuracy:.2f}')
+            f'Epoch: {epoch:03d}/{epochs:03d} | loss={np.mean(_loss):.4f} | lr={lr} | accuracy={accuracy:.2f}')
+        # logging.info(
+        #     f'Epoch: {step_k:02d}th | {epoch:03d}/{epochs:03d} | loss={np.mean(_loss):.4f} | lr={lr} | accuracy={accuracy:.2f}')
 
         # 保存结果
         epoch_path = f'{model_path}/epoch-{epoch}'
@@ -120,6 +123,8 @@ def run(data_path, dataset_name, train_ratio, batch_size, patch_size,
             json.dump(train_result, f, ensure_ascii=True, indent=2)
 
         AConvNet.save(epoch, os.path.join(epoch_path, f'model-{dataset_name}-{epoch}.pth'))
+
+        # step_k += 1
 
     print("[info] 模型训练完成！！！")
 
