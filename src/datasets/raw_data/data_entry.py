@@ -43,13 +43,39 @@ def generate_data(src_data_path, processed_data_path, dataset_name, mode, use_ph
     azimuths = np.array([]) # 方位角
     meta_label = {}         # 图像的一些属性
     # 根据是否使用相位信息调整总通道数
-    total_images_data_channels = 2 * len(image_path_list) if use_phase else len(image_path_list)
-    images = np.empty((total_images_data_channels, chip_size, chip_size))  # 图像数据
+    # total_images_data_channels = 2 * len(image_path_list) if use_phase else len(image_path_list)
+    # images = np.empty((total_images_data_channels, chip_size, chip_size))  # 图像数据
+    if use_phase:
+        images = np.empty((len(image_path_list), chip_size, chip_size, 2))  # 图像数据
+    else:
+        images = np.empty((len(image_path_list), chip_size, chip_size, 1))
 
     for i, img_path in enumerate(image_path_list):
         image, meta_label = mstar_dataset.read(img_path)
         azimuths = np.append(azimuths, meta_label['azimuth_angle'])
-        images[i, :, :] = np.squeeze(image)
+        images[i, :, :, :] = image
+        # if use_phase:
+        #     images[i, :, :, :] = image
+        #     # images[i * 2, :, :] = image[:, :, 0]        # 存储第一个通道的数据
+        #     # images[i * 2 + 1, :, :] = image[:, :, 1]    # 存储第二个通道的数据
+        # else:
+        #     images[i, :, :] = np.squeeze(image)
+
+    # # 振幅数据标准化
+    # amplitude_data = images[1].reshape(1, 128, 128)     # 振幅数据在第一个通道
+    # amplitude_scaler = MinMaxScaler(feature_range=(0, 1))
+    # amplitude_normalized = amplitude_scaler.fit_transform(amplitude_data.reshape(-1, 1)).reshape(amplitude_data.shape)
+    #
+    # # 相位数据标准化
+    # phase_data = images[0].reshape(1, 128, 128)         # 相位数据在第二个通道
+    # phase_data = np.sqrt(phase_data)                    # 开根号，使数据更集中
+    # phase_scaler = MinMaxScaler(feature_range=(0, 1))
+    # phase_normalized = phase_scaler.fit_transform(phase_data.reshape(-1, 1)).reshape(phase_data.shape)
+    # # max_value = np.amax(phase_data)
+    # #
+    # # max_index = np.unravel_index(np.argmax(phase_data), phase_data.shape)
+    #
+    # images = np.squeeze(np.stack((amplitude_normalized, phase_normalized), axis=0))
 
     # 创建要保存的数据字典(方位角和图像数据)
     images_data = {'azimuths': azimuths, 'images': images}
