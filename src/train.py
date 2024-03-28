@@ -9,10 +9,10 @@ import torch
 from tqdm import tqdm
 
 # 如果在jupyter中运行，则打开注释，因为运行本文件之前不会运行__init__.py
-# current_directory = os.getcwd()
-# SRC = os.path.abspath(os.path.join(current_directory, '..'))  # 假设 src 目录在当前目录的上一级
-# if SRC not in sys.path:
-#     sys.path.append(SRC)
+current_directory = os.getcwd()
+SRC = os.path.abspath(os.path.join(current_directory, '..'))  # 假设 src 目录在当前目录的上一级
+if SRC not in sys.path:
+    sys.path.append(SRC)
 
 from src.utils.general import set_random_seed, setup_logger
 from src.utils import validation
