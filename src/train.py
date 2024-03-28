@@ -69,20 +69,20 @@ def run(data_path, dataset_name, train_ratio, batch_size, patch_size,
     )
     print("[info] 模型构建完成")
 
-    start_epoch = 0
+    start_epoch = 1
     # 如果需要从之前的某个时间点开始训练
     if resume:
-        checkpoint = torch.load(checkpoint_path)                                # 加载checkpoint
-        AConvNet.net.load_state_dict(checkpoint['model_state_dict'])            # 恢复模型
+        checkpoint = torch.load(checkpoint_path)  # 加载checkpoint
+        AConvNet.net.load_state_dict(checkpoint['model_state_dict'])  # 恢复模型
         AConvNet.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])  # 恢复优化器状态
-        start_epoch = checkpoint['epoch'] + 1                                   # 初始训练回合
+        start_epoch = checkpoint['epoch']+1  # 初始训练回合
 
     # 模型参数和结果保存位置
     model_path = os.path.join(output_dir, dataset_name)
     if not os.path.exists(model_path):
         os.makedirs(model_path, exist_ok=True)
 
-    for epoch in range(start_epoch, epochs):
+    for epoch in range(start_epoch, epochs+1):
         train_result = {
             'loss': 0.0,
             'accuracy': 0.0
