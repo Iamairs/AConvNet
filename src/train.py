@@ -7,6 +7,10 @@ import sys
 import numpy as np
 import torch
 from tqdm import tqdm
+from torchvision.transforms import transforms
+from torch.utils.data import DataLoader
+from torch.utils.data.dataset import Subset
+from sklearn.model_selection import KFold
 
 # 如果在jupyter中运行，则打开注释，因为运行本文件之前不会运行__init__.py
 current_directory = os.getcwd()
@@ -18,6 +22,7 @@ from src.utils.general import set_random_seed, setup_logger
 from src.utils import validation
 from src.options import parse_model_args
 from src.datasets.processed_data import data_loader
+from src.datasets.processed_data.dataset import CustomDataset
 import model
 
 
@@ -29,6 +34,26 @@ def run(data_path, dataset_name, train_ratio, batch_size, patch_size,
     """
     训练模型并保存训练结果
     """
+
+    # # 通过自定义数据类获取数据
+    # _dataset = CustomDataset(data_path=data_path, dataset_name=dataset_name, is_train=True, patch_size=patch_size,
+    #                          transform=transforms.Compose([transforms.ToTensor()]))
+    #
+    # kf = KFold(n_splits=5, shuffle=True, random_state=random_seed)
+    # step_k = 1
+    #
+    # for train_index, val_index in kf.split(_dataset):
+    #     # print(train_index, test_index)
+    #
+    #     train_fold = Subset(_dataset, train_index)
+    #     valid_fold = Subset(_dataset, val_index)
+    #
+    #     # 打包成DataLoader类型 用于 训练
+    #     train_set = DataLoader(dataset=train_fold, batch_size=batch_size, shuffle=True, num_workers=0)
+    #     valid_set = DataLoader(dataset=valid_fold, batch_size=batch_size, shuffle=True, num_workers=0)
+
+
+
 
     # 加载数据集
     train_set, valid_set = data_loader.load_dataset(data_path=data_path, is_train=True, dataset_name=dataset_name,
