@@ -156,6 +156,29 @@ def run(data_path, dataset_name, batch_size, patch_size,
 
     print("[info] 模型测试完成！！！")
 
+    # ----------------------------------------- 绘制绘制损失-准确率图像和混淆矩阵 --------------------------------------------
+    # 在测试集上执行推理
+    pred_label_list, true_label_list = get_labels(AConvNet, test_set)
+    all_pred_labels = np.concatenate(pred_label_list)
+    all_true_labels = np.concatenate(true_label_list)
+    labels_name = sorted(['2S1', 'BMP2', 'BRDM2', 'BTR60', 'BTR70', 'D7', 'T62', 'T72', 'ZIL131', 'ZSU234'])
+
+    plot_loss_accuracy(
+        data_set_result_path=r"E:\code\objectDetection\AConvNet\outputs\checkpoints\soc",
+        img_save_path=r'E:\code\objectDetection\AConvNet\outputs\images'
+    )
+
+    plot_confusion_matrix(all_true_labels, all_pred_labels, labels_name, title="Confusion Matrix", is_norm=True,
+                          img_save_path=r'E:\code\objectDetection\AConvNet\outputs\images')
+
+
+
+    # --------------------------------------------------- 噪声测试 ------------------------------------------------------
+    noise_result = {}  # 测试结果准确率
+
+    for ratio in [0.01, 0.05, 0.10, 0.15]:
+        noise_result[ratio] = noise_test(AConvNet, test_set, ratio)
+        print(f'ratio = {ratio:.2f}, accuracy = {noise_result[ratio]:.2f}')
 
 def main():
     print("[info] 开始...")
