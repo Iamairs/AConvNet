@@ -10,12 +10,12 @@ class AConvNetModel:
         self.net = network.Network(
             classes=classes,
             channels=channels,
-            dropout_rate=params.get('dropout_rate', 0.5)
+            dropout_rate=params.get('dropout_rate')
         )
 
         # 设置计算设备为GPU或CPU
         _device = params.get('device', 'cuda')
-        self.device = torch.device('cuda' if ((_device == "cuda") & torch.cuda.is_available()) else 'cpu')
+        self.device = torch.device('cuda:0' if ((_device == "cuda") & torch.cuda.is_available()) else 'cpu')
         self.net.to(self.device)
 
         # 学习率相关参数
