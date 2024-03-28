@@ -199,3 +199,20 @@ class CustomDataset(Dataset):
         x = np.random.randint(0, (image_w-size))
         y = np.random.randint(0, (image_h-size))
         return image[y:y+size, x:x+size]
+
+
+    # @staticmethod
+    # def add_speckle_noise(image, L=1):
+    #     """
+    #     在图像上添加幅度斑点噪声
+    #
+    #     :param L: 斑点噪声的查找窗口大小，它影响了噪声的强度。L越大，斑点噪声的强度越小
+    #     """
+    #     row, col = image.shape
+    #     # 生成幅度噪声，服从 Rayleigh 分布
+    #     amplitude_noise = np.random.rayleigh(1, (row, col, L)).mean(axis=2)
+    #     # 将噪声添加到图像上
+    #     noisy_image = image * amplitude_noise
+    #
+    #     return noisy_image
+

@@ -59,6 +59,7 @@ def run(data_path, dataset_name, train_ratio, batch_size, patch_size,
     train_set, valid_set = data_loader.load_dataset(data_path=data_path, is_train=True, dataset_name=dataset_name,
                                                     patch_size=patch_size, batch_size=batch_size,
                                                     train_ratio=train_ratio)
+
     print("[info] 数据加载完成")
 
     # 初始化AConvNet模型
@@ -119,7 +120,8 @@ def run(data_path, dataset_name, train_ratio, batch_size, patch_size,
         if not os.path.exists(epoch_path):
             os.makedirs(epoch_path, True)
 
-        with open(os.path.join(epoch_path, f'history-{dataset_name}-{epoch}.json'), mode='w', encoding='utf-8') as f:
+        with open(os.path.join(epoch_path, f'history-{dataset_name}-{epoch}.json'), mode='w',
+                  encoding='utf-8') as f:
             json.dump(train_result, f, ensure_ascii=True, indent=2)
 
         AConvNet.save(epoch, os.path.join(epoch_path, f'model-{dataset_name}-{epoch}.pth'))

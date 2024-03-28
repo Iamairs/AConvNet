@@ -105,7 +105,7 @@ def run(data_path, dataset_name, batch_size, patch_size,
         classes, channels, dropout_rate, activation,
         lr, lr_step, lr_decay, momentum, weight_decay, device, checkpoint_path):
     # 模型的保存路径（记得注释掉！！！！！！！！！！！！！！！！！！）
-    checkpoint_path = r"E:\code\objectDetection\AConvNet\outputs\checkpoints\soc\epoch-99\model-soc-99.pth"
+    checkpoint_path = r"E:\code\objectDetection\AConvNet\outputs\checkpoints\soc\epoch-2\model-soc-2.pth"
 
     # 加载保存的模型
     AConvNet = model.AConvNetModel(
@@ -118,7 +118,6 @@ def run(data_path, dataset_name, batch_size, patch_size,
     else:
         checkpoint = torch.load(checkpoint_path, map_location=torch.device('cpu'))
 
-    checkpoint = torch.load(checkpoint_path)
     AConvNet.net.load_state_dict(checkpoint['model_state_dict'])
 
     # 将模型设置为评估模式
