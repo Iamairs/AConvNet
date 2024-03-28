@@ -1,12 +1,21 @@
 # 导入顺序：Python内置模块、第三方库、本地应用/库
 import os
+import sys
 from multiprocessing import Pool
 import warnings
+
 
 import h5py
 import numpy as np
 from scipy import io
 import glob
+from sklearn.preprocessing import MinMaxScaler
+
+# 如果在jupyter中运行，则打开注释，因为运行本文件之前不会运行__init__.py
+current_directory = os.getcwd()
+SRC = os.path.abspath(os.path.join(current_directory, '../../..'))
+if SRC not in sys.path:
+    sys.path.append(SRC)
 
 from src.datasets.raw_data import mstar
 from src.options import parse_data_args
