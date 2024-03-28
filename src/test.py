@@ -14,9 +14,91 @@ if SRC not in sys.path:
 
 from src.datasets.processed_data import data_loader
 from src.options import parse_model_args
-from src.utils.general import ROOT, set_random_seed, plot_confusion_matrix
+from src.utils.general import ROOT, set_random_seed, plot_confusion_matrix, plot_loss_accuracy
 from src.utils.metrics import compute_loss, validation
 import model
+
+
+@torch.no_grad()
+def get_labels(model_temp, data_set):
+    """
+    测试当前模型效果，并获取分类准确率
+    """
+    _pred_label_list = []
+    _true_label_list = []
+
+    model_temp.net.eval()   # 设置模型为评估模式
+
+    _softmax = torch.nn.Softmax(dim=1)
+
+    for i, data in enumerate(tqdm(data_set)):
+        images, labels, _ = data
+
+        predictions = model_temp.inference(images.float())  # 模型推理
+        predictions = _softmax(predictions)                 # 使用Softmax函数获取概率分布
+        # 获取索引，即预测的类别
+        _, predictions = torch.max(predictions.detach(), 1)
+
+        labels = labels.type(torch.LongTensor)
+
+        # 将预测标签和真实标签添加到列表中
+        _pred_label_list.append(predictions.cpu().numpy())
+        _true_label_list.append(labels.cpu().numpy())
+
+    return _pred_label_list, _true_label_list
+
+def generate_noise(_images, _ratio):
+    """
+    按一定比例向图像中添加噪声
+    """
+    if _ratio >= 1 or _ratio <= 0:
+        print(f"ratio值为：{_ratio}，请设置在0~1范围内")
+        return
+
+    n, _, h, w = _images.shape
+    noise = np.array([np.random.uniform(size=(1, h, w)) for _ in range(n)])
+
+    # 确定要设置为0的元素的数量，非0元素即为噪声
+    total_elements = noise.size
+    num_elements_to_set_zero = int(total_elements * (1 - _ratio))
+
+    # 随机选择要设置为0的元素的坐标
+    indices_to_set_zero = np.random.choice(total_elements, num_elements_to_set_zero, replace=False)
+
+    # 将选定的元素设置为0
+    noise.flat[indices_to_set_zero] = 0
+
+    return _images + noise.astype(np.float32)
+
+
+def noise_test(_model, _data_set, _ratio):
+    """
+    在添加一定比例噪声的数据集上测试模型效果，并获取分类准确率
+    """
+    num_data = 0
+    corrects = 0
+
+    _model.net.eval()   # 设置模型为评估模式
+
+    _softmax = torch.nn.Softmax(dim=1)
+
+    for i, data in enumerate(tqdm(_data_set)):
+        images, labels, _ = data
+        images = generate_noise(images, _ratio)
+
+        predictions = _model.inference(images.float())  # 模型推理
+        predictions = _softmax(predictions)                 # 使用Softmax函数获取概率分布
+        # 获取索引，即预测的类别
+        _, predictions = torch.max(predictions.detach(), 1)
+
+        labels = labels.type(torch.LongTensor)
+        num_data += labels.size(0)
+        corrects += (predictions == labels.to(_model.device)).sum().item()
+
+    accuracy = 100 * corrects / num_data
+
+    return accuracy
+
 
 
 def run(data_path, dataset_name, batch_size, patch_size,
@@ -31,6 +113,10 @@ def run(data_path, dataset_name, batch_size, patch_size,
         activation=activation, lr=lr, lr_step=lr_step, lr_decay=lr_decay,
         momentum=momentum, weight_decay=weight_decay
     )
+    if torch.cuda.is_available():
+        checkpoint = torch.load(checkpoint_path, map_location=torch.device('cuda:0'))
+    else:
+        checkpoint = torch.load(checkpoint_path, map_location=torch.device('cpu'))
 
     checkpoint = torch.load(checkpoint_path)
     AConvNet.net.load_state_dict(checkpoint['model_state_dict'])
