@@ -13,6 +13,89 @@ class Network(nn.Module):
         self._w_init = params.get('w_init', lambda x: nn.init.kaiming_normal_(x, nonlinearity='relu'))
         self._b_init = params.get('b_init', lambda x: nn.init.constant_(x, 0.1))
 
+        # self._layer = nn.Sequential(
+        #     _blocks.Conv2DBlock(
+        #         shape=[5, 5, self.channels, 16], stride=1, padding=0, activation='relu',
+        #         max_pool=True, max_pool_size=2, max_pool_stride=2,
+        #         w_init=self._w_init, b_init=self._b_init
+        #     ),
+        #     # _blocks.CBAM(16),
+        #     _blocks.Conv2DBlock(
+        #         shape=[5, 5, 16, 32], stride=1, padding=0, activation='relu',
+        #         max_pool=True, max_pool_size=2, max_pool_stride=2, deformable_groups=2,
+        #         w_init=self._w_init, b_init=self._b_init
+        #     ),
+        #     # _blocks.CBAM(32),
+        #     _blocks.Conv2DBlock(
+        #         shape=[6, 6, 32, 64], stride=1, padding=0, activation='relu',
+        #         max_pool=True, max_pool_size=2, max_pool_stride=2, deformable_groups=2,
+        #         w_init=self._w_init, b_init=self._b_init
+        #     ),
+        #
+        #     nn.Dropout(p=0.5),
+        #     # _blocks.CBAM(64),
+        #     _blocks.Conv2DBlock(
+        #         shape=[5, 5, 64, 128], stride=1, padding=0, activation='relu',
+        #         max_pool=False, w_init=self._w_init, b_init=self._b_init, deformable_groups=2,
+        #     ),
+        #     # _blocks.CBAM(128),
+        #
+        #     _blocks.Conv2DBlock(
+        #         shape=[3, 3, 128, self.classes], stride=1, padding=0,
+        #         max_pool=False, w_init=self._w_init, b_init=nn.init.zeros_,  deformable_groups=2,
+        #         # 零初始化偏置可以被视为一个初始的“无偏”状态，有助于让网络更容易学习适当的权重来进行分类？
+        #     ),
+        #     nn.Flatten()
+        # )
+
+        # AM-CNN模型：
+        # self._layer = nn.Sequential(
+        #     _blocks.AMConv2dBlock(
+        #         shape=[3, 3, self.channels, 16], stride=1, padding=0, activation='relu',
+        #         max_pool=False, max_pool_size=2, max_pool_stride=2,
+        #         w_init=self._w_init, b_init=self._b_init
+        #     ),
+        #     _blocks.AMConv2dBlock(
+        #         shape=[7, 7, 16, 32], stride=1, padding=0, activation='relu',
+        #         max_pool=False, max_pool_size=2, max_pool_stride=2,
+        #         w_init=self._w_init, b_init=self._b_init
+        #     ),
+        #     _blocks.AMConv2dBlock(
+        #         shape=[5, 5, 32, 64], stride=1, padding=0, activation='relu',
+        #         max_pool=False, max_pool_size=2, max_pool_stride=2,
+        #         w_init=self._w_init, b_init=self._b_init
+        #     ),
+        #
+        #     _blocks.AMConv2dBlock(
+        #         shape=[5, 5, 64, 128], stride=1, padding=0, activation='relu',
+        #         max_pool=True, max_pool_size=2, max_pool_stride=2,
+        #         w_init=self._w_init, b_init=self._b_init
+        #     ),
+        #     _blocks.AMConv2dBlock(
+        #         shape=[5, 5, 128, 256], stride=1, padding=0, activation='relu',
+        #         max_pool=True, max_pool_size=2, max_pool_stride=2,
+        #         w_init=self._w_init, b_init=self._b_init
+        #     ),
+        #     _blocks.AMConv2dBlock(
+        #         shape=[6, 6, 256, 128], stride=1, padding=0, activation='relu',
+        #         max_pool=True, max_pool_size=2, max_pool_stride=2,
+        #         w_init=self._w_init, b_init=self._b_init
+        #     ),
+        #
+        #     _blocks.AMConv2dBlock(
+        #         shape=[5, 5, 128, 64], stride=1, padding=0, activation='relu',
+        #         max_pool=False, max_pool_size=2, max_pool_stride=2,
+        #         w_init=self._w_init, b_init=self._b_init
+        #     ),
+        #
+        #     _blocks.Conv2DBlock(
+        #         shape=[3, 3, 64, self.classes], stride=1, padding=0,
+        #         max_pool=False, w_init=self._w_init, b_init=nn.init.zeros_
+        #     ),
+        #     nn.Softmax(dim=1),
+        #     nn.Flatten()
+        # )
+
         self._layer = nn.Sequential(
             _blocks.Conv2DBlock(
                 shape=[5, 5, self.channels, 16], stride=1, padding=0, activation='relu',
