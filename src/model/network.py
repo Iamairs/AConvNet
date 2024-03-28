@@ -9,7 +9,7 @@ class Network(nn.Module):
         super(Network, self).__init__()
         self.channels = channels
         self.classes = classes
-        self.dropout_rate = params.get('dropout_rate', 0.5)
+        self.dropout_rate = params.get('dropout_rate', 0.2)
         self._w_init = params.get('w_init', lambda x: nn.init.kaiming_normal_(x, nonlinearity='relu'))
         self._b_init = params.get('b_init', lambda x: nn.init.constant_(x, 0.1))
 
@@ -152,4 +152,42 @@ class Network(nn.Module):
         )
 
     def forward(self, x):
-        return self._layer(x)
+        x = self._layer(x)
+        return x
+
+    #     self._layer = nn.Sequential(
+    #         _blocks.Conv2DBlock(
+    #             shape=[5, 5, self.channels, 16], stride=1, padding=0, activation='relu',
+    #             max_pool=True, max_pool_size=2, max_pool_stride=2, batch_norm=True,
+    #             w_init=self._w_init, b_init=self._b_init
+    #         ),
+    #         _blocks.Conv2DBlock(
+    #             shape=[5, 5, 16, 32], stride=1, padding=0, activation='relu',
+    #             max_pool=True, max_pool_size=2, max_pool_stride=2, batch_norm=True,
+    #             w_init=self._w_init, b_init=self._b_init
+    #         ),
+    #         _blocks.Conv2DBlock(
+    #             shape=[6, 6, 32, 64], stride=1, padding=0, activation='relu',
+    #             max_pool=True, max_pool_size=2, max_pool_stride=2, batch_norm=True,
+    #             w_init=self._w_init, b_init=self._b_init
+    #         ),
+    #         _blocks.Conv2DBlock(
+    #             shape=[5, 5, 64, 128], stride=1, padding=0, activation='relu',
+    #             max_pool=False, w_init=self._w_init, b_init=self._b_init
+    #         ),
+    #     )
+    #     self.lstm = nn.LSTM(128, 64, num_layers=2, batch_first=True, dropout=self.dropout_rate)
+    #     self.dropout = nn.Dropout(p=self.dropout_rate)
+    #     self.fc = nn.Linear(64, self.classes)
+
+    # def forward(self, x):
+    #     x = self._layer(x)
+    #     # 将卷积层的输出调整为适合LSTM的形状
+    #     x = x.view(x.size(0), -1, 128)
+    #     x, _ = self.lstm(x)
+    #     # 取最后一个时间步
+    #     x = x[:, -1, :]
+    #     x = self.dropout(x)
+    #     x = self.fc(x)
+
+    #     return x
