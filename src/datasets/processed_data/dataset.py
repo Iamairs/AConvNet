@@ -1,11 +1,13 @@
 # 导入顺序：Python内置模块、第三方库、本地应用/库
 import glob
 import os
+import random
 import re
 import warnings
 
 import h5py
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 from torch.utils.data import Dataset
 
@@ -30,14 +32,23 @@ class CustomDataset(Dataset):
         return len(self.labels)
 
     def __getitem__(self, idx):
-        _image = self.images[idx]
-        _label = self.labels[idx]
-        _serial_number = self.serial_number[idx]
+        if isinstance(idx, slice):
+            # 创建一个新的 CustomDataset 实例，包含切片指定的元素
+            slice_dataset = CustomDataset(data_path="", dataset_name=self.dataset_name, is_train=self.is_train,
+                                          patch_size=self.patch_size, transform=self.transform)
+            slice_dataset.images = self.images[idx]
+            slice_dataset.labels = self.labels[idx]
+            slice_dataset.serial_number = self.serial_number[idx]
+            return slice_dataset
+        else:
+            _image = self.images[idx]
+            _label = self.labels[idx]
+            _serial_number = self.serial_number[idx]
 
-        if self.transform:
-            _image = self.transform(_image)
+            if self.transform:
+                _image = self.transform(_image)
 
-        return _image, _label, _serial_number
+            return _image, _label, _serial_number
 
     def _load_data(self, data_path):
         """
