@@ -15,31 +15,55 @@ class Network(nn.Module):
 
         self._layer = nn.Sequential(
             _blocks.Conv2DBlock(
-                shape=[5, 5, self.channels, 16], stride=1, padding='valid', activation='relu',
-                max_pool=True, max_pool_size=2, max_pool_stride=2,
+                shape=[5, 5, self.channels, 16], stride=1, padding=0, activation='relu',
+                max_pool=True, max_pool_size=2, max_pool_stride=2, batch_norm=True,
                 w_init=self._w_init, b_init=self._b_init
             ),
-            _blocks.Conv2DBlock(
-                shape=[5, 5, 16, 32], stride=1, padding='valid', activation='relu',
-                max_pool=True, max_pool_size=2, max_pool_stride=2,
-                w_init=self._w_init, b_init=self._b_init
-            ),
-            _blocks.Conv2DBlock(
-                shape=[6, 6, 32, 64], stride=1, padding='valid', activation='relu',
-                max_pool=True, max_pool_size=2, max_pool_stride=2,
-                w_init=self._w_init, b_init=self._b_init
-            ),
-            _blocks.Conv2DBlock(
-                shape=[5, 5, 64, 128], stride=1, padding='valid', activation='relu',
-                max_pool=False, w_init=self._w_init, b_init=self._b_init
-            ),
-            # 一般在全连接层之间放置Dropout来避免过拟合
-            nn.Dropout(p=self.dropout_rate),
 
             _blocks.Conv2DBlock(
-                shape=[3, 3, 128, self.classes], stride=1, padding='valid',
+                shape=[3, 3, 16, 32], stride=1, padding=0, activation='relu',
+                max_pool=False, max_pool_size=2, max_pool_stride=2, batch_norm=True,
+                w_init=self._w_init, b_init=self._b_init
+            ),
+            _blocks.AMConv2dBlock(
+                shape=[3, 3, 32, 64], stride=1, padding=0, activation='relu',
+                max_pool=True, max_pool_size=2, max_pool_stride=2, batch_norm=True,
+                w_init=self._w_init, b_init=self._b_init
+            ),
+            _blocks.AMConv2dBlock(
+                shape=[1, 1, 64, 32], stride=1, padding=0, activation='relu',
+                max_pool=False, max_pool_size=2, max_pool_stride=2, batch_norm=True,
+                w_init=self._w_init, b_init=self._b_init
+            ),
+
+            _blocks.AMConv2dBlock(
+                shape=[6, 6, 32, 64], stride=1, padding=0, activation='relu',
+                max_pool=True, max_pool_size=2, max_pool_stride=2, batch_norm=True,
+                w_init=self._w_init, b_init=self._b_init
+            ),
+
+            # nn.Dropout(p=self.dropout_rate),
+
+            _blocks.AMConv2dBlock(
+                shape=[3, 3, 64, 128], stride=1, padding=0, activation='relu',
+                max_pool=False, max_pool_size=2, max_pool_stride=2, batch_norm=True,
+                w_init=self._w_init, b_init=self._b_init
+            ),
+            _blocks.AMConv2dBlock(
+                shape=[3, 3, 128, 256], stride=1, padding=0, activation='relu',
+                max_pool=False, max_pool_size=2, max_pool_stride=2, batch_norm=True,
+                w_init=self._w_init, b_init=self._b_init
+            ),
+            _blocks.Conv2DBlock(
+                shape=[1, 1, 256, 128], stride=1, padding=0, activation='relu',
+                max_pool=False, max_pool_size=2, max_pool_stride=2, batch_norm=True,
+                w_init=self._w_init, b_init=self._b_init
+            ),
+
+            _blocks.Conv2DBlock(
+                shape=[3, 3, 128, self.classes], stride=1, padding=0,
                 max_pool=False, w_init=self._w_init, b_init=nn.init.zeros_
-                # 零初始化偏置可以被视为一个初始的“无偏”状态，有助于让网络更容易学习适当的权重来进行分类？
+                # 零初始化偏置可以被视为一个初始的“无偏”状态，有助于让网络更容易学习适当的权重来进行分类
             ),
             nn.Flatten()
         )
