@@ -75,29 +75,76 @@ class CustomDataset(Dataset):
             # azimuths = images_content['azimuths']
             images_data = images_content['images']
             # 获取图像数量和图像大小
-            num_images, image_height, image_width = images_data.shape
+            num_images, image_height, image_width, channels = images_data.shape
 
-            # 遍历 images_data 中的每个图像
-            for i in range(num_images):
-                image = images_data[i, :, :]
+            # 原始图像列表
+            origin_images = []
+            # 划分出训练集和验证集
+            origin_images_train = []
+            origin_images_valid = []
 
-                # 判断是否需要裁剪，进行数据扩充
-                if self.is_train:
-                    cropped_images = []
-                    # 随机裁剪20次，再中心裁剪1次，因此每张图片将被裁剪为21张，以扩充数据集
-                    for _ in range(20):
-                        cropped_images.append(self._random_crop(image, self.patch_size))
-                    cropped_images.append(self._center_crop(image, self.patch_size))
+            if self.is_train:
+                for i in range(num_images):
+                    image = images_data[i]
+                    origin_images.append(image)
 
-                    for cropped_image in cropped_images:
-                        self.images.append(cropped_image)
-                        self.labels.append(image_label)
-                        self.serial_number.append(target_type)
-                else:
+                # 划分训练集和验证集，其中训练集占 80%，验证集占 20%
+                origin_images_train, origin_images_valid = train_test_split(origin_images, test_size=0.2, random_state=42)
+
+                cropped_images = []
+
+                # 随机裁剪3375次，以扩充数据集(其中2700张用于训练集，675张用于测试集)
+                for _ in range(2700):
+                    cropped_images.append(self._random_crop(random.choice(origin_images_train), self.patch_size))
+                for _ in range(675):
+                    cropped_images.append(self._random_crop(random.choice(origin_images_valid), self.patch_size))
+
+                # for _ in range(3375):
+                #     cropped_images.append(self._random_crop(random.choice(origin_images), self.patch_size))
+
+                for cropped_image in cropped_images:
+                    self.images.append(cropped_image)
+                    self.labels.append(image_label)
+                    self.serial_number.append(target_type)
+
+            else:
+                for i in range(num_images):
+                    image = images_data[i]
                     center_cropped_image = self._center_crop(image, self.patch_size)
                     self.images.append(center_cropped_image)
                     self.labels.append(image_label)
                     self.serial_number.append(target_type)
+
+            # # 遍历 images_data 中的每个图像
+            # for i in range(num_images):
+            #     image = images_data[i, :, :]
+            #
+            #     # 判断是否需要裁剪，进行数据扩充
+            #     if self.is_train:
+            #         # 将大图裁剪为n张指定尺寸的小图（n = (image_h-patch_size+1)*(image_w-patch_size+1)）
+            #         # cropped_images = self._crop_image(image, self.patch_size)
+            #         # for cropped_image in cropped_images:
+            #         #     self.images.append(cropped_image)
+            #         #     self.labels.append(image_label)
+            #         #     self.serial_number.append(target_type)
+            #
+            #         cropped_images = []
+            #         # 随机裁剪10次，以扩充数据集
+            #         for _ in range(10):
+            #             cropped_images.append(self._random_crop(image, self.patch_size))
+            #         # cropped_images.append(self._center_crop(image, self.patch_size))
+            #
+            #         for cropped_image in cropped_images:
+            #             self.images.append(cropped_image)
+            #             self.labels.append(image_label)
+            #             self.serial_number.append(target_type)
+            #     else:
+            #         center_cropped_image = self._center_crop(image, self.patch_size)
+            #         self.images.append(center_cropped_image)
+            #         self.labels.append(image_label)
+            #         self.serial_number.append(target_type)
+
+
 
     @staticmethod
     def _crop_image(image, patch_size):
@@ -106,7 +153,7 @@ class CustomDataset(Dataset):
         """
         _cropped_images = []
         # 获取图像长宽
-        image_h, image_w = image.shape
+        image_h, image_w, _ = image.shape
 
         if patch_size > min(image_h, image_w):
             return [image]
@@ -127,7 +174,7 @@ class CustomDataset(Dataset):
         """
         图像中心裁剪
         """
-        image_h, image_w = image.shape
+        image_h, image_w, _ = image.shape
 
         if size > min(image_h, image_w):
             return image
@@ -144,7 +191,7 @@ class CustomDataset(Dataset):
         """
         图像随机裁剪
         """
-        image_h, image_w = image.shape
+        image_h, image_w, _ = image.shape
 
         if size > min(image_h, image_w):
             return image
