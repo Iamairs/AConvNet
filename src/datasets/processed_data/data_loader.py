@@ -16,36 +16,36 @@ def load_dataset(data_path, is_train, dataset_name, patch_size, batch_size, trai
                              transform=transform)
 
     if is_train:
-        # 初始化存储各个子集的列表
-        train_datasets = []
-        valid_datasets = []
+        # # 初始化存储各个子集的列表
+        # train_datasets = []
+        # valid_datasets = []
+        #
+        # # 定义每个类别的样本数
+        # lengths = [3375, 3375, 3375, 3375, 3375, 3375, 3375, 3375, 3375, 3375]
+        # class_item_data_list = split_dataset(_dataset, lengths)
+        #
+        # for item in class_item_data_list:
+        #     train_length = int(3375 * 0.8)
+        #     val_length = 3375 - train_length
+        #     lengths_item = [train_length, val_length]
+        #     train_dataset_item, valid_dataset_item = split_dataset(item, lengths_item)
+        #
+        #     # 将新的子集添加到列表中
+        #     train_datasets.append(train_dataset_item)
+        #     valid_datasets.append(valid_dataset_item)
+        #
+        # # 使用列表中的所有子集创建 ConcatDataset 实例
+        # train_dataset = ConcatDataset(train_datasets)
+        # valid_dataset = ConcatDataset(valid_datasets)
 
-        # 定义每个类别的样本数
-        lengths = [3375, 3375, 3375, 3375, 3375, 3375, 3375, 3375, 3375, 3375]
-        class_item_data_list = split_dataset(_dataset, lengths)
+        # 定义划分方式
+        train_length = int(len(_dataset) * 0.8)
+        val_length = len(_dataset) - train_length
+        lengths = [train_length, val_length]
 
-        for item in class_item_data_list:
-            train_length = int(3375 * 0.8)
-            val_length = 3375 - train_length
-            lengths_item = [train_length, val_length]
-            train_dataset_item, valid_dataset_item = split_dataset(item, lengths_item)
-
-            # 将新的子集添加到列表中
-            train_datasets.append(train_dataset_item)
-            valid_datasets.append(valid_dataset_item)
-
-        # 使用列表中的所有子集创建 ConcatDataset 实例
-        train_dataset = ConcatDataset(train_datasets)
-        valid_dataset = ConcatDataset(valid_datasets)
-
-        # # 定义划分方式
-        # train_length = int(len(_dataset) * 0.8)
-        # val_length = len(_dataset) - train_length
-        # lengths = [train_length, val_length]
-
-        # # 使用自定义函数划分数据集
-        # train_dataset, valid_dataset = split_dataset(_dataset, lengths)
-        # # 划分训练集和验证集
+        # 使用自定义函数划分数据集
+        train_dataset, valid_dataset = split_dataset(_dataset, lengths)
+        # 划分训练集和验证集
         # train_dataset, valid_dataset = split_train_valid(_dataset, train_ratio)
 
         _data_loader_train = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=is_train, num_workers=0)
