@@ -65,6 +65,14 @@ class CustomDataset(Dataset):
         # 定义正则表达式模式，获取目标类型(命名格式：目标类型_sn_序列号_俯仰角_degrees.mat)
         pattern = r'^([^_]+)'
 
+        # 划分出训练集和验证集
+        cropped_images_train_list = []
+        cropped_images_valid_list = []
+        image_label_train_list = []
+        target_type_train_list = []
+        image_label_valid_list = []
+        target_type_valid_list = []
+
         for image_label, images_path in enumerate(images_path_list):
             target_type = re.match(pattern, os.path.basename(images_path)).group(1)
 
@@ -79,9 +87,6 @@ class CustomDataset(Dataset):
 
             # 原始图像列表
             origin_images = []
-            # 划分出训练集和验证集
-            origin_images_train = []
-            origin_images_valid = []
 
             if self.is_train:
                 for i in range(num_images):
@@ -91,21 +96,25 @@ class CustomDataset(Dataset):
                 # 划分训练集和验证集，其中训练集占 80%，验证集占 20%
                 origin_images_train, origin_images_valid = train_test_split(origin_images, test_size=0.2, random_state=42)
 
-                cropped_images = []
-
                 # 随机裁剪3375次，以扩充数据集(其中2700张用于训练集，675张用于测试集)
                 for _ in range(2700):
-                    cropped_images.append(self._random_crop(random.choice(origin_images_train), self.patch_size))
+                    cropped_images_train_list.append(self._random_crop(random.choice(origin_images_train), self.patch_size))
+                    image_label_train_list.append(image_label)
+                    target_type_train_list.append(target_type)
+                    # cropped_images.append(self._random_crop(random.choice(origin_images_train), self.patch_size))
                 for _ in range(675):
-                    cropped_images.append(self._random_crop(random.choice(origin_images_valid), self.patch_size))
+                    cropped_images_valid_list.append(self._random_crop(random.choice(origin_images_valid), self.patch_size))
+                    image_label_valid_list.append(image_label)
+                    target_type_valid_list.append(target_type)
+                    # cropped_images.append(self._random_crop(random.choice(origin_images_valid), self.patch_size))
 
                 # for _ in range(3375):
                 #     cropped_images.append(self._random_crop(random.choice(origin_images), self.patch_size))
 
-                for cropped_image in cropped_images:
-                    self.images.append(cropped_image)
-                    self.labels.append(image_label)
-                    self.serial_number.append(target_type)
+                # for cropped_image in cropped_images:
+                #     self.images.append(cropped_image)
+                #     self.labels.append(image_label)
+                #     self.serial_number.append(target_type)
 
             else:
                 for i in range(num_images):
@@ -114,6 +123,12 @@ class CustomDataset(Dataset):
                     self.images.append(center_cropped_image)
                     self.labels.append(image_label)
                     self.serial_number.append(target_type)
+
+        if self.is_train:
+            # 将训练集和验证集合并
+            self.images = cropped_images_train_list + cropped_images_valid_list
+            self.labels = image_label_train_list + image_label_valid_list
+            self.serial_number = target_type_train_list + target_type_valid_list
 
             # # 遍历 images_data 中的每个图像
             # for i in range(num_images):
