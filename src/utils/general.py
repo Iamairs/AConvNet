@@ -134,3 +134,23 @@ def plot_confusion_matrix(label_true, label_pred, labels_name, title="Confusion 
         plt.savefig(img_path, bbox_inches='tight', dpi=300)
 
     plt.show()                                      # plt.show()需在plt.savefig()之后
+
+def showSarImage(sar_image):
+    # 提取幅度和相位信息
+    phase = sar_image[0]
+    amplitude = sar_image[1]
+
+    # 创建子图
+    fig, axs = plt.subplots(2, 1, figsize=(6, 10))
+
+    # 显示幅度信息
+    axs[0].imshow(amplitude, cmap='gray')
+    axs[0].set_title('Phase')
+
+    # 显示相位信息
+    axs[1].imshow(phase, cmap='gray')
+    axs[1].set_title('Amplitude')
+
+    # 显示图像
+    plt.tight_layout()
+    plt.show()
